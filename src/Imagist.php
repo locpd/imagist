@@ -1,6 +1,6 @@
 <?php
 
-namespace phamloc\Imagist;
+namespace phamloc\imagist;
 
 class Imagist
 {

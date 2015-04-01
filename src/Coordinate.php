@@ -21,7 +21,7 @@
 	* @package Internals
   **/
 
-namespace phamloc\Imagist;
+namespace phamloc\imagist;
 
 /**
  * A utility class for smart coordinates
