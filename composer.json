@@ -1,0 +1,9 @@
+{
+    "name": "phamloc/imagist",
+    "description": "Resize and crop images using GraphicsMagick",
+	"autoload": {
+        "psr-4": {
+            "phamloc\\imagist\\": "src"
+        }
+    }
+}
