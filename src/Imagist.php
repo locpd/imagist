@@ -4,17 +4,15 @@ namespace phamloc\imagist;
 
 class Imagist
 {
-	private $imageFile, $imageRes, $width, $height;
+	private $imageFile, $size, $tmpFile;
 	
 	public function __construct($file_path)
 	{
 		$this->imageFile = $file_path;
-		$this->imageRes = new \Gmagick($this->imageFile);
-		$this->imageRes->setCompressionQuality(90);
 	}
 	
 	/**
-	 * Resize the image to given dimensions.
+	 * Resize the image to given dimensions as JPEG type.
 	 * 
 	 * $width and $height are both smart coordinates. This means that you can pass any of these values in:
 	 *   - positive or negative integer (100, -20, ...)
@@ -58,16 +56,21 @@ class Imagist
 			throw new \Exception("Both dimensions must be larger than 0.");
 		}
 		
-		$this->imageRes->scaleimage($dim['width'], $dim['height']);
+		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		$dest = $this->getTmpFile();
+		$cmd = "convert -strip -interlace Plane -quality 85 -resize {$dim['width']}x{$dim['height']} ".escapeshellarg($src)." ".escapeshellarg($dest);
+		exec($cmd, $output, $return_status);
+		if ($return_status !== 0) {
+			throw new \Exception("Failed to resize with cmd:\n$cmd");
+		}
 		
-		$this->width = null;
-		$this->height = null;
+		$this->refreshSize();
 		
 		return $this;
 	}
 	
 	/**
-	 * Returns a cropped image
+	 * Returns the cropped image as JPEG type
 	 *
 	 * @param smart_coordinate $left
 	 * @param smart_coordinate $top
@@ -104,39 +107,72 @@ class Imagist
 			throw new \Exception("Can't crop outside of an image.");
 		}
 		
-		$this->imageRes->cropimage($width, $height, $left, $top);
+		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		$dest = $this->getTmpFile();
+		$cmd = "convert -strip -interlace Plane -quality 85 -crop {$width}x{$height}+{$left}+{$top} ".escapeshellarg($src)." ".escapeshellarg($dest);
+		exec($cmd, $output, $return_status);
+		if ($return_status !== 0) {
+			throw new \Exception("Failed to crop with cmd:\n$cmd");
+		}
 		
-		$this->width = null;
-		$this->height = null;
+		$this->refreshSize();
 		
 		return $this;
 	}
 	
 	public function save($file_name)
 	{
-		$this->imageRes->writeimage($file_name, true);
+		if ($this->tmpFile) {
+			rename($this->tmpFile, $file_name);
+		} else {
+			copy($this->imageFile, $file_name);
+		}
 	}
 	
 	public function output()
 	{
-		header("Content-type: " . image_type_to_mime_type(exif_imagetype($this->imageFile)));
-		echo $this->imageRes;
+		$file = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		header("Content-type: " . image_type_to_mime_type(exif_imagetype($file)));
+		echo file_get_contents($file);
+		
+		if ($this->tmpFile) {
+			unlink($this->tmpFile);
+		}
+	}
+	
+	private function getSize()
+	{
+		if ( empty($this->size) ) {
+			$file = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+			$size = getimagesize($file);
+			$this->size = ['width' => $size[0], 'height' => $size[1]];
+		}
+		return $this->size;
+	}
+	
+	private function refreshSize()
+	{
+		$this->size = null;
 	}
 	
 	public function getWidth()
 	{
-		if ( empty($this->width) ) {
-			$this->width = $this->imageRes->getimagewidth();
-		}
-		return $this->width;
+		$size = $this->getSize();
+		return $size['width'];
 	}
 	
 	public function getHeight()
 	{
-		if ( empty($this->height) ) {
-			$this->height = $this->imageRes->getimageheight();
+		$size = $this->getSize();
+		return $size['height'];
+	}
+	
+	private function getTmpFile()
+	{
+		if ( empty($this->tmpFile) ) {
+			$this->tmpFile = sys_get_temp_dir().'/'.uniqid().'.jpg';
 		}
-		return $this->height;
+		return $this->tmpFile;
 	}
 	
 	/**

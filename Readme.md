@@ -1,3 +1,5 @@
+This package just requires ImageMagick to be installed on server. Php's imagick extension is not needed.
+
 Example usage:
 
 $image = new phamloc\Imagist\Imagist($img);

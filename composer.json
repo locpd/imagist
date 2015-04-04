@@ -1,6 +1,6 @@
 {
     "name": "phamloc/imagist",
-    "description": "Resize and crop images using GraphicsMagick",
+    "description": "Resize and crop images using ImageMagick, based on WideImage (http://wideimage.sourceforge.net/)",
 	"autoload": {
         "psr-4": {
             "phamloc\\imagist\\": "src"
