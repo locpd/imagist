@@ -30,9 +30,9 @@ class Optimizer
 		}
 		
 		if ($src_type === IMAGETYPE_GIF) {
-			self::compressGIF($src, $dest, $max_width, $max_height);
+			self::compressGIF($src, $dest);
 		} else {
-			self::compressGeneral($src, $dest);
+			self::compressGeneral($src, $dest, $max_width, $max_height);
 		}
 	}
 
