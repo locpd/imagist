@@ -17,7 +17,7 @@ class Optimizer
 	 * @throws \InvalidArgumentException if image type of src is not supported
 	 * @throws \Exception if failed to run external programs to optimize
 	 */
-	public static function compress($src, $dest = null)
+	public static function compress($src, $dest = null, $max_width = 2816, $max_height = 2112)
 	{
 		if ( ! $dest) {
 			$dest = $src;
@@ -30,7 +30,7 @@ class Optimizer
 		}
 		
 		if ($src_type === IMAGETYPE_GIF) {
-			self::compressGIF($src, $dest);
+			self::compressGIF($src, $dest, $max_width, $max_height);
 		} else {
 			self::compressGeneral($src, $dest);
 		}
@@ -43,7 +43,7 @@ class Optimizer
 	 * @param string $dest Path to optimized file
 	 * @throws \Exception if failed to run external programs to optimize
 	 */
-	private static function compressGeneral($src, $dest, $max_width = 2816, $max_height = 2112)
+	private static function compressGeneral($src, $dest, $max_width, $max_height)
 	{
 		$src_size = filesize($src);
 
