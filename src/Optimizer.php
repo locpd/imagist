@@ -7,8 +7,6 @@ namespace phamloc\imagist;
  */
 class Optimizer
 {
-	private static $max_width = 2816, $max_height = 2112;
-	
 	/**
 	 * Regardless of dest's extension, optimizer may convert file type of optimized image
 	 * jpeg, png, bmp: convert to jpeg format
@@ -45,7 +43,7 @@ class Optimizer
 	 * @param string $dest Path to optimized file
 	 * @throws \Exception if failed to run external programs to optimize
 	 */
-	private static function compressGeneral($src, $dest)
+	private static function compressGeneral($src, $dest, $max_width = 2816, $max_height = 2112)
 	{
 		$src_size = filesize($src);
 
@@ -54,11 +52,11 @@ class Optimizer
 		// limit width & height
 		$limit_str = '';
 		list($width, $height) = getimagesize($src);
-		if ($width > self::max_width) {
-			$limit_str .= self::max_width;
+		if ($width > $max_width) {
+			$limit_str .= $max_width;
 		}
-		if ($height > self::max_height) {
-			$limit_str .= 'x'.self::max_height;
+		if ($height > $max_height) {
+			$limit_str .= 'x'.$max_height;
 		}
 		if ( ! empty($limit_str)) {
 			$limit_str = "-resize $limit_str";
