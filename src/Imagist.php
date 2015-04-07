@@ -57,6 +57,7 @@ class Imagist
 		}
 		
 		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		$src .= '[0]'; // convert first frame only (useful for animated gif only)
 		$dest = $this->getTmpFile();
 		$cmd = "convert -strip -interlace Plane -quality 85 -resize {$dim['width']}x{$dim['height']} ".escapeshellarg($src)." ".escapeshellarg($dest);
 		exec($cmd, $output, $return_status);
@@ -108,6 +109,7 @@ class Imagist
 		}
 		
 		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		$src .= '[0]'; // convert first frame only (useful for animated gif only)
 		$dest = $this->getTmpFile();
 		$cmd = "convert -strip -interlace Plane -quality 85 -crop {$width}x{$height}+{$left}+{$top} ".escapeshellarg($src)." ".escapeshellarg($dest);
 		exec($cmd, $output, $return_status);
