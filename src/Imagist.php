@@ -152,7 +152,7 @@ class Imagist
 		
 		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
 		$dest = $this->getTmpFile();
-		$cmd = "composite -geometry +$x_padding+$y_padding -dissolve $opacity% -gravity $gravity ".escapeshellarg($src)." ".escapeshellarg($src)." ".escapeshellarg($dest);
+		$cmd = "composite -geometry +$x_padding+$y_padding -dissolve $opacity% -gravity $gravity ".escapeshellarg($watermark_file)." ".escapeshellarg($src)." ".escapeshellarg($dest);
 		exec($cmd, $output, $return_status);
 		if ($return_status !== 0) {
 			throw new \Exception("Failed to watermark with cmd:\n$cmd");
