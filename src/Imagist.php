@@ -140,7 +140,7 @@ class Imagist
 		if ( ! isset($arr_x_edge[$x_edge]) || ! isset($arr_y_edge[$y_edge]) ) {
 			throw new \Exception('Invalid x_edge or y_edge');
 		}
-		$gravity = $arr_x_edge[$x_edge].$arr_y_edge[$y_edge];
+		$gravity = $arr_y_edge[$y_edge].$arr_x_edge[$x_edge];
 		
 		$x_padding = (int) $x_padding;
 		$y_padding = (int) $y_padding;
