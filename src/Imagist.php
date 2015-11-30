@@ -122,6 +122,47 @@ class Imagist
 		return $this;
 	}
 	
+	/**
+	 * Watermark image
+	 * 
+	 * @param string $watermark_file Location of watermark file
+	 * @param string $x_edge Horizontal edge of watermark, can be 'left'|'right'
+	 * @param string $y_edge Vertical edge of watermark, can be 'top'|'bottom'
+	 * @param int $x_padding Horizontal padding from horizontal edge of watermark
+	 * @param int $y_padding Vertical padding from vertical edge of watermark
+	 * @param int $opacity Opacity of watermark, from 0 to 100
+	 * @return \phamloc\imagist\Imagist
+	 */
+	public function watermark($watermark_file, $x_edge, $y_edge, $x_padding = 0, $y_padding = 0, $opacity = 100)
+	{
+		$arr_x_edge = ['left' => 'west', 'right' => 'east'];
+		$arr_y_edge = ['top' => 'north', 'bottom' => 'south'];
+		if ( ! isset($arr_x_edge[$x_edge]) || ! isset($arr_y_edge[$y_edge]) ) {
+			throw new \Exception('Invalid x_edge or y_edge');
+		}
+		$gravity = $arr_x_edge[$x_edge].$arr_y_edge[$y_edge];
+		
+		$x_padding = (int) $x_padding;
+		$y_padding = (int) $y_padding;
+		
+		$opacity = (int) $opacity;
+		if ($opacity > 100 || $opacity < 0) {
+			throw new \Exception("Invalid opacity");
+		}
+		
+		$src = $this->tmpFile ? $this->tmpFile : $this->imageFile;
+		$dest = $this->getTmpFile();
+		$cmd = "composite -geometry +$x_padding+$y_padding -dissolve $opacity% -gravity $gravity ".escapeshellarg($src)." ".escapeshellarg($src)." ".escapeshellarg($dest);
+		exec($cmd, $output, $return_status);
+		if ($return_status !== 0) {
+			throw new \Exception("Failed to watermark with cmd:\n$cmd");
+		}
+		
+		$this->refreshSize();
+		
+		return $this;
+	}
+	
 	public function save($file_name)
 	{
 		if ($this->tmpFile) {
