@@ -8,6 +8,10 @@ class Imagist
 	
 	public function __construct($file_path)
 	{
+		if ( !file_exists($file_path)) {
+			throw new \Exception('File '.$file_path.' does not exist');
+		}
+		
 		$this->imageFile = $file_path;
 	}
 	
